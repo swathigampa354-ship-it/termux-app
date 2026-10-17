@@ -8,7 +8,6 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.os.Environment;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -253,10 +252,10 @@ public class TermuxTerminalViewClient extends TermuxTerminalViewClientBase {
                 mTermuxTerminalSessionActivityClient.switchToSession(true);
             } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP || unicodeChar == 'p' /* previous */) {
                 mTermuxTerminalSessionActivityClient.switchToSession(false);
-            } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                mActivity.getDrawer().openDrawer(Gravity.LEFT);
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || unicodeChar == 'd'/* drawer */) {
+                mActivity.getDrawer().openDrawer(mActivity.getDrawerGravity());
             } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                mActivity.getDrawer().closeDrawers();
+                mActivity.closeDrawer();
             } else if (unicodeChar == 'k'/* keyboard */) {
                 onToggleSoftKeyboardRequest();
             } else if (unicodeChar == 'm'/* menu */) {

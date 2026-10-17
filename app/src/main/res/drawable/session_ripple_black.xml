@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@android:color/darker_gray" >
-    <item>
-        <color android:color="@android:color/background_dark" />
-    </item>
-</ripple>
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:insetLeft="4dp"
+    android:insetRight="4dp"
+    android:insetTop="2dp"
+    android:insetBottom="2dp">
+    <ripple xmlns:android="http://schemas.android.com/apk/res/android"
+        android:color="@color/grey_900">
+        <item>
+            <shape android:shape="rectangle">
+                <solid android:color="@color/black" />
+                <corners android:radius="12dp" />
+            </shape>
+        </item>
+    </ripple>
+</inset>

@@ -126,6 +126,16 @@ public final class TermuxPreferenceConstants {
 
 
         /**
+         * Defines the side from which the terminal session drawer will be opened. The value is
+         * `"start"` or `"end"`. An empty value means that the
+         * {@link TermuxPropertyConstants#KEY_TERMINAL_DRAWER_SIDE} termux.properties value should
+         * be used instead.
+         */
+        public static final String KEY_TERMINAL_DRAWER_SIDE = "terminal_drawer_side";
+        public static final String DEFAULT_VALUE_KEY_TERMINAL_DRAWER_SIDE = "";
+
+
+        /**
          * Defines the key for font size of termux terminal view.
          */
         public static final String KEY_FONTSIZE = "fontsize";

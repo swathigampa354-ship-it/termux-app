@@ -51,6 +51,7 @@ import com.termux.shared.termux.interact.TextInputDialogUtils;
 import com.termux.shared.logger.Logger;
 import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.termux.settings.properties.TermuxAppSharedProperties;
+import com.termux.shared.termux.settings.properties.TermuxPropertyConstants;
 import com.termux.shared.termux.theme.TermuxThemeUtils;
 import com.termux.shared.theme.NightMode;
 import com.termux.shared.view.ViewUtils;
@@ -62,6 +63,7 @@ import com.termux.view.TerminalViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
@@ -175,6 +177,14 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
     private float mTerminalToolbarDefaultHeight;
 
+    /**
+     * The absolute gravity from which the terminal sessions drawer will be opened, either
+     * {@link GravityCompat#START} or {@link GravityCompat#END}. Configured by the
+     * `terminal_drawer_side` app preference and the `terminal-drawer-side` termux.properties
+     * value.
+     */
+    private int mDrawerGravity = GravityCompat.START;
+
 
     private static final int CONTEXT_MENU_SELECT_URL_ID = 0;
     private static final int CONTEXT_MENU_SHARE_TRANSCRIPT_ID = 1;
@@ -226,6 +236,8 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
         setMargins();
 
+        updateDrawerPosition();
+
         mTermuxActivityRootView = findViewById(R.id.activity_termux_root_view);
         mTermuxActivityRootView.setActivity(this);
         mTermuxActivityBottomSpaceView = findViewById(R.id.activity_termux_bottom_space_view);
@@ -250,6 +262,10 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         setNewSessionButtonView();
 
         setToggleKeyboardView();
+
+        setDrawerOpenButtonView();
+
+        synchronizeDrawerOpenButtonVisibilityWithDrawer();
 
         registerForContextMenu(mTerminalView);
 
@@ -470,6 +486,125 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
 
 
+    /** Get the side from which the terminal session drawer will be opened, either "start" or "end". */
+    public String getEffectiveDrawerSide() {
+        String drawerSide = "";
+        if (mPreferences != null)
+            drawerSide = mPreferences.getTerminalDrawerSide();
+
+        // The setting in the settings UI takes precedence, otherwise the termux.properties
+        // `terminal-drawer-side` value is used.
+        if (DataUtils.isNullOrEmpty(drawerSide)) {
+            drawerSide = mProperties.getTerminalDrawerSide();
+        }
+
+        // Fallback to the default value if the value is invalid
+        if (!TermuxPropertyConstants.IVALUE_TERMINAL_DRAWER_SIDE_START.equals(drawerSide) &&
+            !TermuxPropertyConstants.IVALUE_TERMINAL_DRAWER_SIDE_END.equals(drawerSide)) {
+            drawerSide = TermuxPropertyConstants.DEFAULT_IVALUE_TERMINAL_DRAWER_SIDE;
+        }
+
+        return drawerSide;
+    }
+
+    /**
+     * Move the terminal sessions drawer to the side of the screen that the drawer side is
+     * configured to open from. This should be called when activity is created and whenever
+     * termux properties are reloaded, like when theme or drawer side is changed.
+     */
+    private void updateDrawerPosition() {
+        String drawerSide = getEffectiveDrawerSide();
+        mDrawerGravity = TermuxPropertyConstants.IVALUE_TERMINAL_DRAWER_SIDE_END.equals(drawerSide) ?
+            GravityCompat.END : GravityCompat.START;
+
+        View leftDrawer = findViewById(R.id.left_drawer);
+        if (leftDrawer != null) {
+            DrawerLayout.LayoutParams layoutParams = (DrawerLayout.LayoutParams) leftDrawer.getLayoutParams();
+            if (layoutParams != null && layoutParams.gravity != mDrawerGravity) {
+                layoutParams.gravity = mDrawerGravity;
+                leftDrawer.setLayoutParams(layoutParams);
+            }
+        }
+    }
+
+    /** Open the terminal sessions drawer from its configured side. */
+    public void openDrawer() {
+        DrawerLayout drawerLayout = getDrawer();
+        if (drawerLayout != null)
+            drawerLayout.openDrawer(mDrawerGravity);
+    }
+
+    /** Get the absolute drawer gravity, either {@link GravityCompat#START} or {@link GravityCompat#END}. */
+    public int getDrawerGravity() {
+        return mDrawerGravity;
+    }
+
+    /** Close the terminal sessions drawer if it is open. */
+    public void closeDrawer() {
+        DrawerLayout drawerLayout = getDrawer();
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(mDrawerGravity))
+            drawerLayout.closeDrawer(mDrawerGravity);
+    }
+
+    /** Open or close the terminal sessions drawer from its configured side. */
+    public void toggleDrawer() {
+        DrawerLayout drawerLayout = getDrawer();
+        if (drawerLayout == null) return;
+
+        if (drawerLayout.isDrawerOpen(mDrawerGravity))
+            closeDrawer();
+        else
+            openDrawer();
+    }
+
+    /** Show or hide the drawer open button depending on if the drawer is open or not. */
+    private void synchronizeDrawerOpenButtonVisibilityWithDrawer() {
+        View drawerOpenButton = getDrawerOpenButtonView();
+        if (drawerOpenButton != null) {
+            DrawerLayout drawerLayout = getDrawer();
+            if (drawerLayout != null) {
+                boolean drawerOpen = drawerLayout.isDrawerOpen(GravityCompat.START) ||
+                    drawerLayout.isDrawerOpen(GravityCompat.END);
+                drawerOpenButton.setVisibility(drawerOpen ? View.GONE : View.VISIBLE);
+            }
+        }
+    }
+
+    @Nullable
+    public View getDrawerOpenButtonView() {
+        return findViewById(R.id.drawer_open_button);
+    }
+
+    /** Set the click listener of the drawer open button, which is always visible on terminals
+     * when the drawer is closed so that drawer can be opened without using an edge swipe. */
+    private void setDrawerOpenButtonView() {
+        View drawerOpenButton = getDrawerOpenButtonView();
+        if (drawerOpenButton != null) {
+            drawerOpenButton.setOnClickListener(v -> openDrawer());
+
+            // Hide the button while the drawer is open, show it when the drawer is closed.
+            DrawerLayout drawerLayout = getDrawer();
+            if (drawerLayout != null) {
+                drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(@NonNull View drawerView) {
+                        View button = getDrawerOpenButtonView();
+                        if (button != null) button.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onDrawerClosed(@NonNull View drawerView) {
+                        View button = getDrawerOpenButtonView();
+                        if (button != null) button.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+        }
+    }
+
+
+
+
     public void addTermuxActivityRootViewGlobalLayoutListener() {
         getTermuxActivityRootView().getViewTreeObserver().addOnGlobalLayoutListener(getTermuxActivityRootView());
     }
@@ -601,8 +736,10 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     @SuppressLint("RtlHardcoded")
     @Override
     public void onBackPressed() {
-        if (getDrawer().isDrawerOpen(Gravity.LEFT)) {
-            getDrawer().closeDrawers();
+        DrawerLayout drawerLayout = getDrawer();
+        if (drawerLayout != null && (drawerLayout.isDrawerOpen(mDrawerGravity) ||
+            drawerLayout.isDrawerOpen(GravityCompat.START) || drawerLayout.isDrawerOpen(GravityCompat.END))) {
+            drawerLayout.closeDrawers();
         } else {
             finishActivityIfNotFinishing();
         }
@@ -710,7 +847,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         mTerminalView.onContextMenuClosed(menu);
     }
 
-    private void showKillSessionDialog(TerminalSession session) {
+    public void showKillSessionDialog(TerminalSession session) {
         if (session == null) return;
 
         final AlertDialog.Builder b = new AlertDialog.Builder(this);
@@ -968,7 +1105,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     private void reloadActivityStyling(boolean recreateActivity) {
         if (mProperties != null) {
             reloadProperties();
-
             if (mExtraKeysView != null) {
                 mExtraKeysView.setButtonTextAllCaps(mProperties.shouldExtraKeysTextBeAllCaps());
                 mExtraKeysView.reload(mTermuxTerminalExtraKeys.getExtraKeysInfo(), mTerminalToolbarDefaultHeight);
@@ -979,6 +1115,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         }
 
         setMargins();
+        updateDrawerPosition();
         setTerminalToolbarHeight();
 
         FileReceiverActivity.updateFileReceiverActivityComponentsState(this);

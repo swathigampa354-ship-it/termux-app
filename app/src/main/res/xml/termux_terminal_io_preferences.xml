@@ -18,4 +18,17 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        app:key="session_drawer"
+        app:title="@string/termux_session_drawer_header">
+
+        <ListPreference
+            app:key="terminal_drawer_side"
+            app:defaultValue=""
+            app:entries="@array/termux_session_drawer_side_entries"
+            app:entryValues="@array/termux_session_drawer_side_values"
+            app:title="@string/termux_session_drawer_side_title" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

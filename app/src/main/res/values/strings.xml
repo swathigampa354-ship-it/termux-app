@@ -47,6 +47,11 @@
     <string name="title_max_terminals_reached">Max terminals reached</string>
     <string name="msg_max_terminals_reached">Close down existing ones before creating new.</string>
 
+    <string name="action_open_drawer">Sessions drawer</string>
+    <string name="action_close_session">Close session</string>
+    <string name="msg_confirm_close_session">This will end the process (pid %1$d) running in this session.\n\n`%2$s`</string>
+    <string name="action_close_session_confirm">Close session</string>
+
     <string name="title_rename_session">Set session name</string>
     <string name="action_rename_session_confirm">Set</string>
     <string name="title_create_named_session">New named session</string>
@@ -181,12 +186,36 @@
                 <string name="termux_soft_keyboard_enabled_off">Soft keyboard will be disabled.</string>
                 <string name="termux_soft_keyboard_enabled_on">Soft keyboard will be enabled. (Default)</string>
 
-                <!-- Soft Keyboard Only If No Hardware-->
-                <string name="termux_soft_keyboard_enabled_only_if_no_hardware_title">Soft Keyboard Only If No Hardware</string>
-                <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">Soft keyboard will be enabled even if
-                    hardware keyboard is connected. (Default)</string>
-                <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">Soft keyboard will be enabled only if
-                    no hardware keyboard is connected.</string>
+            <!-- Soft Keyboard Only If No Hardware-->
+            <string name="termux_soft_keyboard_enabled_only_if_no_hardware_title">Soft Keyboard Only If No Hardware</string>
+            <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">Soft keyboard will be enabled even if
+                hardware keyboard is connected. (Default)</string>
+            <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">Soft keyboard will be enabled only if
+                no hardware keyboard is connected.</string>
+
+    <!-- Session Drawer Category -->
+    <string name="termux_session_drawer_header">Session Drawer</string>
+
+        <!-- Session Drawer Side -->
+        <string name="termux_session_drawer_side_title">Session Drawer Open Side</string>
+        <string name="termux_session_drawer_side_summary">The side of the screen from which the session drawer will open. (Default: From Left)</string>
+        <string name="termux_session_drawer_side_left">From Left</string>
+        <string name="termux_session_drawer_side_right">From Right</string>
+
+        <string-array name="termux_session_drawer_side_entries">
+            <item>@string/termux_session_drawer_side_left</item>
+            <item>@string/termux_session_drawer_side_right</item>
+        </string-array>
+
+        <string-array name="termux_session_drawer_side_values">
+            <item>@string/termux_session_drawer_side_value_start</item>
+            <item>@string/termux_session_drawer_side_value_end</item>
+        </string-array>
+
+        <string name="termux_session_drawer_side_value_start" translatable="false">start</string>
+        <string name="termux_session_drawer_side_value_end" translatable="false">end</string>
+
+
 
 
         <!-- Terminal View Preferences -->

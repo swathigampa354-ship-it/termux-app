@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -50,18 +51,30 @@ public class TermuxSessionsListViewController extends ArrayAdapter<TermuxSession
         }
 
         TextView sessionTitleView = sessionRowView.findViewById(R.id.session_title);
+        ImageButton closeSessionButton = sessionRowView.findViewById(R.id.session_close_button);
 
         TerminalSession sessionAtRow = getItem(position).getTerminalSession();
         if (sessionAtRow == null) {
             sessionTitleView.setText("null session");
+            closeSessionButton.setVisibility(View.GONE);
             return sessionRowView;
+        } else {
+            closeSessionButton.setVisibility(View.VISIBLE);
         }
 
         boolean shouldEnableDarkTheme = ThemeUtils.shouldEnableDarkTheme(mActivity, NightMode.getAppNightMode().getName());
 
+        // Set the row background to the current session selector, which shows a rounded highlight
+        // for the currently selected session and a ripple for the other ones. Note that the row
+        // recyclation could result in a stale highlight, so set it for both the light and dark
+        // theme variants each time instead of only for the dark theme.
         if (shouldEnableDarkTheme) {
-            sessionTitleView.setBackground(
+            sessionRowView.setBackground(
                 ContextCompat.getDrawable(mActivity, R.drawable.session_background_black_selected)
+            );
+        } else {
+            sessionRowView.setBackground(
+                ContextCompat.getDrawable(mActivity, R.drawable.session_background_selected)
             );
         }
 
@@ -89,6 +102,17 @@ public class TermuxSessionsListViewController extends ArrayAdapter<TermuxSession
         int defaultColor = shouldEnableDarkTheme ? Color.WHITE : Color.BLACK;
         int color = sessionRunning || sessionAtRow.getExitStatus() == 0 ? defaultColor : Color.RED;
         sessionTitleView.setTextColor(color);
+
+        // Closing a session kills its process, so always ask for confirmation before closing a
+        // session to prevent accidental session closures. Sessions that have already finished
+        // have no process to lose, so they can be closed directly.
+        closeSessionButton.setOnClickListener(v -> {
+            if (sessionAtRow.isRunning())
+                mActivity.showKillSessionDialog(sessionAtRow);
+            else
+                mActivity.getTermuxTerminalSessionClient().removeFinishedSession(sessionAtRow);
+        });
+
         return sessionRowView;
     }
 
@@ -96,7 +120,7 @@ public class TermuxSessionsListViewController extends ArrayAdapter<TermuxSession
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         TermuxSession clickedSession = getItem(position);
         mActivity.getTermuxTerminalSessionClient().setCurrentSession(clickedSession.getTerminalSession());
-        mActivity.getDrawer().closeDrawers();
+        mActivity.closeDrawer();
     }
 
     @Override

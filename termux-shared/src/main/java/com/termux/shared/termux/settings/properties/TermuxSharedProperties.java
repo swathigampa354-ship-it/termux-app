@@ -298,6 +298,8 @@ public abstract class TermuxSharedProperties {
                 return (String) getNightModeInternalPropertyValueFromValue(value);
             case TermuxPropertyConstants.KEY_SOFT_KEYBOARD_TOGGLE_BEHAVIOUR:
                 return (String) getSoftKeyboardToggleBehaviourInternalPropertyValueFromValue(value);
+            case TermuxPropertyConstants.KEY_TERMINAL_DRAWER_SIDE:
+                return (String) getTerminalDrawerSideInternalPropertyValueFromValue(value);
             case TermuxPropertyConstants.KEY_VOLUME_KEYS_BEHAVIOUR:
                 return (String) getVolumeKeysBehaviourInternalPropertyValueFromValue(value);
 
@@ -570,6 +572,17 @@ public abstract class TermuxSharedProperties {
         return (String) SharedProperties.getDefaultIfNotInMap(TermuxPropertyConstants.KEY_VOLUME_KEYS_BEHAVIOUR, TermuxPropertyConstants.MAP_VOLUME_KEYS_BEHAVIOUR, SharedProperties.toLowerCase(value), TermuxPropertyConstants.DEFAULT_IVALUE_VOLUME_KEYS_BEHAVIOUR, true, LOG_TAG);
     }
 
+    /**
+     * Returns the value itself if it is not {@code null} and is `"start"` or `"end"`,
+     * otherwise returns {@link TermuxPropertyConstants#DEFAULT_IVALUE_TERMINAL_DRAWER_SIDE}.
+     *
+     * @param value {@link String} value to convert.
+     * @return Returns the internal value for value.
+     */
+    public static String getTerminalDrawerSideInternalPropertyValueFromValue(String value) {
+        return (String) SharedProperties.getDefaultIfNotInMap(TermuxPropertyConstants.KEY_TERMINAL_DRAWER_SIDE, TermuxPropertyConstants.MAP_TERMINAL_DRAWER_SIDE, SharedProperties.toLowerCase(value), TermuxPropertyConstants.DEFAULT_IVALUE_TERMINAL_DRAWER_SIDE, true, LOG_TAG);
+    }
+
 
 
 
@@ -660,6 +673,11 @@ public abstract class TermuxSharedProperties {
 
     public boolean isBackKeyTheEscapeKey() {
         return (boolean) TermuxPropertyConstants.IVALUE_BACK_KEY_BEHAVIOUR_ESCAPE.equals(getInternalPropertyValue(TermuxPropertyConstants.KEY_BACK_KEY_BEHAVIOUR, true));
+    }
+
+    /** Get the {@link TermuxPropertyConstants#KEY_TERMINAL_DRAWER_SIDE} value from the properties file. */
+    public String getTerminalDrawerSide() {
+        return (String) getInternalPropertyValue(TermuxPropertyConstants.KEY_TERMINAL_DRAWER_SIDE, true);
     }
 
     public String getDefaultWorkingDirectory() {

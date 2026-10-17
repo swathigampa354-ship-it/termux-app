@@ -23,19 +23,37 @@
             android:layout_above="@+id/terminal_toolbar_view_pager"
             android:layout_height="match_parent">
 
-            <com.termux.view.TerminalView
-                android:id="@+id/terminal_view"
+            <FrameLayout
+                android:id="@+id/terminal_view_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:defaultFocusHighlightEnabled="false"
-                android:focusableInTouchMode="true"
-                android:scrollbarThumbVertical="@drawable/terminal_scroll_shape"
-                android:scrollbars="vertical"
-                tools:ignore="UnusedAttribute" />
+                android:layout_height="match_parent">
+
+                <com.termux.view.TerminalView
+                    android:id="@+id/terminal_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:defaultFocusHighlightEnabled="false"
+                    android:focusableInTouchMode="true"
+                    android:scrollbarThumbVertical="@drawable/terminal_scroll_shape"
+                    android:scrollbars="vertical"
+                    tools:ignore="UnusedAttribute" />
+
+                <ImageButton
+                    android:id="@+id/drawer_open_button"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="start|top"
+                    android:layout_margin="8dp"
+                    android:contentDescription="@string/action_open_drawer"
+                    android:src="@drawable/ic_menu"
+                    android:scaleType="centerInside"
+                    android:background="@drawable/drawer_trigger_background" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:id="@+id/left_drawer"
-                android:layout_width="240dp"
+                android:layout_width="280dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
                 android:choiceMode="singleChoice"
@@ -48,11 +66,14 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="start">
+
                     <ImageButton
                         android:id="@+id/settings_button"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="8dp"
                         android:src="@drawable/ic_settings"
                         android:background="@null"
                         android:contentDescription="@string/action_open_settings"
@@ -66,6 +87,10 @@
                     android:layout_gravity="top"
                     android:layout_weight="1"
                     android:choiceMode="singleChoice"
+                    android:divider="@android:color/transparent"
+                    android:dividerHeight="0dp"
+                    android:paddingVertical="4dp"
+                    android:clipToPadding="false"
                     android:longClickable="true" />
 
                 <LinearLayout

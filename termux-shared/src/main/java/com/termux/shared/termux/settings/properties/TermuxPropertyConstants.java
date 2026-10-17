@@ -80,6 +80,10 @@ import java.util.Set;
  *
  * - 0.18.0 (2022-06-13)
  *      - Add `KEY_DISABLE_FILE_SHARE_RECEIVER` and `KEY_DISABLE_FILE_VIEW_RECEIVER`.
+ *
+ * - 0.19.0 (2026-10-17)
+ *      - Add `KEY_TERMINAL_DRAWER_SIDE` for configuring which side of the screen the terminal
+ *          session drawer will open from (`start` or `end`).
  */
 
 /**
@@ -161,6 +165,28 @@ public final class TermuxPropertyConstants {
     /** Defines the key for whether to use fullscreen workaround */
     public static final String KEY_USE_FULLSCREEN_WORKAROUND =  "use-fullscreen-workaround"; // Default: "use-fullscreen-workaround"
 
+
+
+
+    /* String */
+
+    /**
+     * Defines the key for which side of the screen the terminal session drawer will be opened from.
+     * `start` opens it from the leading side of the layout (left for left-to-right layouts),
+     * `end` opens it from the trailing side of the layout (right for left-to-right layouts).
+     */
+    public static final String KEY_TERMINAL_DRAWER_SIDE =  "terminal-drawer-side"; // Default: "terminal-drawer-side"
+
+    public static final String IVALUE_TERMINAL_DRAWER_SIDE_START = "start";
+    public static final String IVALUE_TERMINAL_DRAWER_SIDE_END = "end";
+    public static final String DEFAULT_IVALUE_TERMINAL_DRAWER_SIDE = IVALUE_TERMINAL_DRAWER_SIDE_START;
+
+    /** Defines the bidirectional map for terminal drawer side values and their internal values */
+    public static final ImmutableBiMap<String, String> MAP_TERMINAL_DRAWER_SIDE =
+        new ImmutableBiMap.Builder<String, String>()
+            .put(IVALUE_TERMINAL_DRAWER_SIDE_START, IVALUE_TERMINAL_DRAWER_SIDE_START)
+            .put(IVALUE_TERMINAL_DRAWER_SIDE_END, IVALUE_TERMINAL_DRAWER_SIDE_END)
+            .build();
 
 
 
@@ -430,6 +456,7 @@ public final class TermuxPropertyConstants {
         KEY_EXTRA_KEYS_STYLE,
         KEY_NIGHT_MODE,
         KEY_SOFT_KEYBOARD_TOGGLE_BEHAVIOUR,
+        KEY_TERMINAL_DRAWER_SIDE,
         KEY_VOLUME_KEYS_BEHAVIOUR
     ));
 

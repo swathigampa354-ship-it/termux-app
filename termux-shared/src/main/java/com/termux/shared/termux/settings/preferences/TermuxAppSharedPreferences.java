@@ -122,6 +122,23 @@ public class TermuxAppSharedPreferences extends AppSharedPreferences {
 
 
 
+    /**
+     * Get the terminal session drawer side. The values are `"start"` or `"end"`.
+     * An empty value means that the {@link TermuxPropertyConstants#KEY_TERMINAL_DRAWER_SIDE}
+     * termux.properties value should be used instead.
+     */
+    public String getTerminalDrawerSide() {
+        return SharedPreferenceUtils.getString(mSharedPreferences, TERMUX_APP.KEY_TERMINAL_DRAWER_SIDE,
+            TERMUX_APP.DEFAULT_VALUE_KEY_TERMINAL_DRAWER_SIDE, false);
+    }
+
+    /** Set the terminal session drawer side. */
+    public void setTerminalDrawerSide(String value) {
+        SharedPreferenceUtils.setString(mSharedPreferences, TERMUX_APP.KEY_TERMINAL_DRAWER_SIDE, value, false);
+    }
+
+
+
     public static int[] getDefaultFontSizes(Context context) {
         float dipInPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, context.getResources().getDisplayMetrics());
 
